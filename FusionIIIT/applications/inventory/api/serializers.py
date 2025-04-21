@@ -5,21 +5,21 @@ from applications.inventory.models import Item, DepartmentInfo, SectionInfo, Inv
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = ['item_id', 'item_name', 'quantity', 'type', 'unit']  # Fields to serialize
+        fields = ['item_id', 'item_name', 'quantity', 'type', 'unit', 'indent_id', 'date', 'specifications'] 
 
 
 # Serializer for DepartmentInfo
 class DepartmentInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = DepartmentInfo
-        fields = ['department_id', 'department_name', 'item_name', 'quantity']  # Fields to serialize
+        fields = ['department_id', 'department_name', 'item_name', 'quantity', 'indent_id', 'date', 'specifications']  # Fields to serialize
 
 
 # Serializer for SectionInfo
 class SectionInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = SectionInfo
-        fields = ['section_id', 'section_name', 'item_name', 'quantity']  # Fields to serialize
+        fields = ['section_id', 'section_name', 'item_name', 'quantity', 'indent_id', 'date', 'specifications']  # Fields to serialize
 
 
 # -------------- NEW SERIALIZER --------------
