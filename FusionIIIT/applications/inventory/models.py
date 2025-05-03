@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.validators import MinValueValidator
+from django.utils import timezone
 
 class Item(models.Model):
     ITEM_TYPE_CHOICES = [
@@ -20,20 +22,86 @@ class DepartmentInfo(models.Model):
     department_id = models.AutoField(primary_key=True)
     department_name = models.CharField(max_length=100)
     item_name = models.CharField(max_length=100)  # e.g., computer
-    quantity = models.PositiveIntegerField(default=0)
+    quantity = models.PositiveIntegerField(
+        default=0,
+        validators=[MinValueValidator(0)]
+    )
+    # New fields
+    specifications = models.TextField(
+        blank=True, 
+        null=True,
+        help_text="Detailed specifications of the item"
+    )
+    date_of_purchase = models.DateField(
+        blank=True, 
+        null=True,
+        help_text="Date when the item was purchased"
+    )
+    indent_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text="Purchase indent/reference number"
+    )
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        help_text="Price of the item",
+        validators=[MinValueValidator(0)]
+    )
 
     def __str__(self):
-        return self.department_name
+        return f"{self.department_name} - {self.item_name}"
+
+    class Meta:
+        verbose_name = "Department Inventory"
+        verbose_name_plural = "Department Inventories"
+        ordering = ['department_name', 'item_name']
 
 
 class SectionInfo(models.Model):
     section_id = models.AutoField(primary_key=True)
     section_name = models.CharField(max_length=100)
     item_name = models.CharField(max_length=100)  # e.g., computer
-    quantity = models.PositiveIntegerField(default=0)
+    quantity = models.PositiveIntegerField(
+        default=0,
+        validators=[MinValueValidator(0)]
+    )
+    # New fields
+    specifications = models.TextField(
+        blank=True, 
+        null=True,
+        help_text="Detailed specifications of the item"
+    )
+    date_of_purchase = models.DateField(
+        blank=True, 
+        null=True,
+        help_text="Date when the item was purchased"
+    )
+    indent_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text="Purchase indent/reference number"
+    )
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        help_text="Price of the item",
+        validators=[MinValueValidator(0)]
+    )
 
     def __str__(self):
-        return self.section_name
+        return f"{self.section_name} - {self.item_name}"
+
+    class Meta:
+        verbose_name = "Section Inventory"
+        verbose_name_plural = "Section Inventories"
+        ordering = ['section_name', 'item_name']
 
 
 # -------------- NEW MODEL --------------

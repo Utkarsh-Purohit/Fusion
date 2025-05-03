@@ -10,17 +10,46 @@ class ItemSerializer(serializers.ModelSerializer):
 
 # Serializer for DepartmentInfo
 class DepartmentInfoSerializer(serializers.ModelSerializer):
+    date_of_purchase = serializers.DateField(format="%Y-%m-%d", required=False, allow_null=True)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True)
+    
     class Meta:
         model = DepartmentInfo
-        fields = ['department_id', 'department_name', 'item_name', 'quantity']  # Fields to serialize
+        fields = [
+            'department_id',
+            'department_name', 
+            'item_name',
+            'quantity',
+            'specifications',
+            'date_of_purchase',
+            'indent_id',
+            'price'
+        ]
+        extra_kwargs = {
+            'specifications': {'required': False, 'allow_blank': True},
+            'indent_id': {'required': False, 'allow_blank': True}
+        }
 
-
-# Serializer for SectionInfo
 class SectionInfoSerializer(serializers.ModelSerializer):
+    date_of_purchase = serializers.DateField(format="%Y-%m-%d", required=False, allow_null=True)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True)
+    
     class Meta:
         model = SectionInfo
-        fields = ['section_id', 'section_name', 'item_name', 'quantity']  # Fields to serialize
-
+        fields = [
+            'section_id',
+            'section_name',
+            'item_name',
+            'quantity',
+            'specifications',
+            'date_of_purchase',
+            'indent_id',
+            'price'
+        ]
+        extra_kwargs = {
+            'specifications': {'required': False, 'allow_blank': True},
+            'indent_id': {'required': False, 'allow_blank': True}
+        }
 
 # -------------- NEW SERIALIZER --------------
 class InventoryRequestSerializer(serializers.ModelSerializer):
