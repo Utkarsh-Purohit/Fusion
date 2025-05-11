@@ -1,6 +1,6 @@
+from . import views
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from . import views
 
 router = DefaultRouter()
 router.register(r'items', views.ItemViewSet)
@@ -10,4 +10,5 @@ router.register(r'requests', views.InventoryRequestViewSet, basename='inventoryr
 
 urlpatterns = [
     path('api/', include(router.urls)),
+    path('return-product/', views.ReturnProductView.as_view(), name='return-product'),
 ]

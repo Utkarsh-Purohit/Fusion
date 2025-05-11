@@ -3,13 +3,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Sum
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
 from django.db.models import Q
-from ..models import Item, DepartmentInfo, SectionInfo, InventoryRequest
+from ..models import Item, DepartmentInfo, SectionInfo, InventoryRequest, ReturnedItem
 from .serializers import (
     ItemSerializer, 
     DepartmentInfoSerializer, 
     SectionInfoSerializer,
-    InventoryRequestSerializer
+    InventoryRequestSerializer,
+    ReturnedItemSerializer
 )
 
 class ItemViewSet(viewsets.ModelViewSet):
@@ -75,3 +77,71 @@ class ItemCountView(APIView):
             })
         except Exception as e:
             return Response({"error": str(e)}, status=500)
+
+class ReturnProductView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        # Extract data from request
+        item_name = request.data.get('item_name')
+        quantity_returned = request.data.get('quantity_returned')
+        department_name = request.data.get('department_name', None)
+        section_name = request.data.get('section_name', None)
+
+        if not item_name or not quantity_returned:
+            return Response(
+                {"error": "Item name and quantity returned are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Try to fetch the item
+        item = None
+        if department_name:
+            item = DepartmentInfo.objects.filter(
+                item_name=item_name, 
+                department_name=department_name
+            ).first()
+        elif section_name:
+            item = SectionInfo.objects.filter(
+                item_name=item_name, 
+                section_name=section_name
+            ).first()
+
+        if not item:
+            return Response(
+                {"error": "Item not found in specified department/section."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Validate quantity
+        if item.quantity < quantity_returned:
+            return Response(
+                {"error": "Return quantity exceeds available quantity."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Update inventory
+        item.quantity -= quantity_returned
+        item.save()
+
+        # Create return record
+        returned_item = ReturnedItem.objects.create(
+            item_name=item_name,
+            quantity_returned=quantity_returned,
+            department_name=department_name,
+            section_name=section_name,
+            price=item.price,
+            specifications=item.specifications
+        )
+
+        return Response(
+            ReturnedItemSerializer(returned_item).data,
+            status=status.HTTP_201_CREATED
+        )
+    def get(self, request, *args, **kwargs):
+        """
+        List ALL returned items (regardless of approval status)
+        """
+        returned_items = ReturnedItem.objects.all()  # Removed the approval_status filter
+        serializer = ReturnedItemSerializer(returned_items, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

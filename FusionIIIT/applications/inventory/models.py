@@ -129,3 +129,32 @@ class InventoryRequest(models.Model):
 
     def __str__(self):
         return f"{self.item.item_name} - {self.department.department_name} ({self.approval_status})"
+
+
+class ReturnedItem(models.Model):
+    ITEM_TYPE_CHOICES = [
+        ('Consumable', 'Consumable'),
+        ('Non-Consumable', 'Non-Consumable'),
+    ]
+
+    return_id = models.AutoField(primary_key=True)
+    item_name = models.CharField(max_length=100)
+    quantity_returned = models.PositiveIntegerField(default=0)
+    department_name = models.CharField(max_length=100, blank=True, null=True)
+    section_name = models.CharField(max_length=100, blank=True, null=True)
+    return_date = models.DateField(auto_now_add=True)
+    specifications = models.TextField(blank=True, null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    approval_status = models.CharField(
+        max_length=20,
+        choices=[('APPROVED', 'APPROVED'), ('PENDING', 'PENDING')],
+        default='PENDING'
+    )
+
+    def __str__(self):
+        return f"Return {self.item_name} ({self.return_id})"
+
+    class Meta:
+        verbose_name = "Returned Item"
+        verbose_name_plural = "Returned Items"
+        ordering = ['-return_date']

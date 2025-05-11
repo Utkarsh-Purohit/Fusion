@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from applications.inventory.models import Item, DepartmentInfo, SectionInfo, InventoryRequest
+from applications.inventory.models import Item, DepartmentInfo, SectionInfo, InventoryRequest, ReturnedItem
 
 # Serializer for Item
 class ItemSerializer(serializers.ModelSerializer):
@@ -68,3 +68,14 @@ class InventoryRequestSerializer(serializers.ModelSerializer):
             'specifications'
         ]
         # or simply: fields = '__all__'
+
+# api/serializers.py
+
+class ReturnedItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReturnedItem
+        fields = [
+            'return_id', 'item_name', 'quantity_returned', 
+            'department_name', 'section_name', 'return_date', 
+            'specifications', 'price', 'approval_status'
+        ]

@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from .models import Item, DepartmentInfo, SectionInfo
-from applications.inventory.api.serializers import ItemSerializer, DepartmentInfoSerializer, SectionInfoSerializer
+from .models import Item, DepartmentInfo, SectionInfo, ReturnedItem
+from applications.inventory.api.serializers import ItemSerializer, DepartmentInfoSerializer, SectionInfoSerializer, ReturnedItemSerializer
 
 # Item ViewSet - Handles CRUD operations for Item
 class ItemViewSet(viewsets.ModelViewSet):
@@ -19,4 +19,9 @@ class DepartmentInfoViewSet(viewsets.ModelViewSet):
 class SectionInfoViewSet(viewsets.ModelViewSet):
     queryset = SectionInfo.objects.all()
     serializer_class = SectionInfoSerializer
+    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access
+
+class ReturnedItemViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ReturnedItem.objects.all()
+    serializer_class = ReturnedItemSerializer
     permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access
